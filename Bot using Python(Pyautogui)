@@ -1,0 +1,60 @@
+import cv2
+import numpy as np
+import pyautogui
+import time
+#time.sleep(10)
+
+def ps(var):
+    if var == 'green':
+        time.sleep(1)
+        pyautogui.leftClick(1351, 530, 2)
+    elif var == 'red':
+        time.sleep(1)
+        pyautogui.leftClick(1370, 579, 2)
+
+i = 0
+while i < 10:  # Limiting the loop to 10 iterations
+    # Capture the screen region
+    time.sleep(59)
+    image = pyautogui.screenshot(region=(750, 250, 90, 400))
+    image = cv2.cvtColor(np.array(image), cv2.COLOR_RGB2HSV)
+    image1 = pyautogui.screenshot(region=(840, 250, 90, 400))
+    image1 = cv2.cvtColor(np.array(image1), cv2.COLOR_RGB2HSV)
+    cv2.imshow('image1', image1)
+    if cv2.waitKey(25) & 0xFF == ord('q'):
+        cv2.destroyAllWindows()
+        break
+
+    color_ranges = {
+        'red': ([0, 100, 100], [10, 255, 255]),
+        #'orange': ([11, 100, 100], [25, 255, 255]),
+        #'yellow': ([26, 100, 100], [40, 255, 255]),
+        'green': ([41, 100, 100], [80, 255, 255])
+        #'blue': ([81, 100, 100], [120, 255, 255]),
+       # 'purple': ([121, 100, 100], [160, 255, 255]),
+       # 'pink': ([161, 100, 100], [170, 255, 255]),
+       # 'white': ([0, 0, 200], [180, 30, 255]),
+        #'black': ([0, 0, 0], [180, 255, 30])
+    }
+
+    # Initialize the detected color name variable
+    detected_color_name = None
+
+    # Loop through color ranges to find the matching color
+    for color_name, (lower, upper) in color_ranges.items():
+        mask = cv2.inRange(image, np.array(lower), np.array(upper))
+        if cv2.countNonZero(mask) > 0:
+            detected_color_name = color_name
+            break
+
+    # Print the detected color name
+    print("Detected color:", detected_color_name)
+
+    if detected_color_name in ['green', 'red']:
+        ps(detected_color_name)
+
+    cv2.imshow('image', image)
+    if cv2.waitKey(25) & 0xFF == ord('q'):
+        cv2.destroyAllWindows()
+        break
+    i += 1
